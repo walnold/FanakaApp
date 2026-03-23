@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'vehicles',
     'instructors',
+    'classes'
 ]
 
 MIDDLEWARE = [
