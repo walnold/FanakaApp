@@ -15,9 +15,9 @@ class Learner(models.Model):
     first_name = models.CharField(max_length=20, blank=False, null=False)
     last_name = models.CharField(max_length=20, blank=False, null=False)
     idNumber = models.CharField(max_length=20, null=False, blank=False, unique=True, db_index=True)
-    status = models.ForeignKey(LearnerStatus, related_name='learners', on_delete=models.SET_NULL)
-    branch = models.ForeignKey(Branch, related_name="learners", on_delete=models.SET_NULL)
-    created_by = models.ForeignKey(Staff, on_delete=models.SET_NULL, blank=True, null=True, related_name='created_payemnts')
+    status = models.ForeignKey(LearnerStatus, related_name='learners', on_delete=models.SET_NULL,null=True, blank=True)
+    branch = models.ForeignKey(Branch, related_name="learners", on_delete=models.SET_NULL, null=True, blank=True)
+    created_by = models.ForeignKey(Staff, on_delete=models.SET_NULL, blank=True, null=True, related_name='created_learners')
 
 
 

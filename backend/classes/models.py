@@ -14,7 +14,7 @@ class Course(models.Model):
     name = models.CharField(max_length=15, blank=True, null=True)
     description = models.CharField(max_length=300)
     num_of_lessons = models.IntegerField()
-    price = models.DecimalField(decimal_places=2, max_digits=2)
+    price = models.DecimalField(decimal_places=2, max_digits=10)
 
 
 

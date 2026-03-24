@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'vehicles',
     'instructors',
-    'classes'
+    'classes',
+    'learner',
 ]
 
 SPECTACULAR_SETTINGS = {
