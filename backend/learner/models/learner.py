@@ -1,4 +1,5 @@
 from django.db import models
+from accounts.models import Staff
 from branches.models import Branch
 
 class LearnerStatus(models.Model):
@@ -16,6 +17,7 @@ class Learner(models.Model):
     idNumber = models.CharField(max_length=20, null=False, blank=False, unique=True, db_index=True)
     status = models.ForeignKey(LearnerStatus, related_name='learners', on_delete=models.SET_NULL)
     branch = models.ForeignKey(Branch, related_name="learners", on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(Staff, on_delete=models.SET_NULL, blank=True, null=True, related_name='created_payemnts')
 
 
 
