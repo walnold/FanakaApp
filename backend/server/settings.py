@@ -25,9 +25,9 @@ SECRET_KEY = 'django-insecure-^)l!m^ag&2cmi_gfh8fb(ahx8a9duu_tw%djgjb!@7-05vv9q^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://fanakaapp.onrender.com', '0.0.0.0', 'https://fanaka.vercel.app', 'http://127.0.0.1:5174', 'http://localhost:5174']
+ALLOWED_HOSTS = ['https://fanakaapp.onrender.com','fanakaapp.onrender.com', '0.0.0.0', 'https://fanaka.vercel.app', 'fanaka.vercel.app','http://127.0.0.1:5174', 'http://localhost:5174']
 CSRF_TRUSTED_ORIGINS  = ['https://fanakaapp.onrender.com', '0.0.0.0', 'https://fanaka.vercel.app', 'http://127.0.0.1:5174', 'http://localhost:5174']
-
+CORS_ALLOW_CREDENTIALS = True
 
 # Application definition
 
