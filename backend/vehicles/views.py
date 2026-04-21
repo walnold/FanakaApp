@@ -12,7 +12,7 @@ from accounts.customPermissions import IsAdminOrReadOnly
 
 class VehicleViewSet(ModelViewSet):
     queryset = Vehicle.objects.all()
-    permission_classes = [IsAdminOrReadOnly]
+    # permission_classes = [IsAdminOrReadOnly]
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -43,10 +43,10 @@ class VehicleViewSet(ModelViewSet):
 class VehicleStatusViewSet(ModelViewSet):
     queryset = VehicleStatus.objects.all()
     serializer_class = VehicleStatusSerializer
-    permission_classes = [IsAdminOrReadOnly]
+    # permission_classes = [IsAdminOrReadOnly]
 
 
 class TransmissionTypeViewSet(ModelViewSet):
     queryset = TransmissionType.objects.all()
     serializer_class = TransmissionTypeSerializer
-    permission_classes = [IsAdminOrReadOnly]
+    # permission_classes = [IsAdminOrReadOnly]

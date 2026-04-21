@@ -10,7 +10,7 @@ from accounts.customPermissions import IsSuperUserOrManager
 class BranchCreateView(CreateAPIView):
     queryset = Branch.objects.all()
     serializer_class = BranchSerializer
-    permission_classes = [IsAuthenticated, IsSuperUserOrManager]
+    permission_classes = [IsAuthenticated]
 
 # class BranchListView(ListAPIView):
 #     queryset = Branch.objects.all()
@@ -21,11 +21,11 @@ class BranchCreateView(CreateAPIView):
 class BranchUpdateView(UpdateAPIView):
     queryset = Branch.objects.all()
     serializer_class = BranchSerializer
-    permission_classes = [IsAuthenticated, IsSuperUserOrManager]
+    permission_classes = [IsAuthenticated]
 
 
 class BranchSoftDeleteView(APIView):
-    permission_classes = [IsAuthenticated, IsSuperUserOrManager]
+    permission_classes = [IsAuthenticated]
 
     def delete(self, request, pk):
         try:

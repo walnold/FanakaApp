@@ -42,7 +42,8 @@ class LoginView(APIView):
                 "refresh":str(refresh),
                 "user":{
                     "username":user.username,
-                    "is_Manager":user.is_Manager
+                    "is_Manager":user.is_Manager,
+                    "user_id":user.id,
                 }}, status=HTTP_200_OK
             )
         
@@ -118,7 +119,7 @@ class ConfirmPasswordReset(APIView):
 class StaffCreateView(CreateAPIView):
     queryset = Staff.objects.all()
     serializer_class = StaffSerializer
-    permission_classes = [IsAuthenticated, IsSuperUserOrManager]
+    permission_classes = [IsAuthenticated]
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
     def perform_update(self, serializer):
@@ -134,7 +135,7 @@ class StaffListView(ListAPIView):
     
 
 class StaffSoftDeleteView(APIView):
-    permission_classes = [IsAuthenticated, IsSuperUserOrManager]
+    permission_classes = [IsAuthenticated]
 
     def delete(self, request, pk):
         try:
