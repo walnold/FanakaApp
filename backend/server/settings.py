@@ -31,6 +31,7 @@ ALLOWED_HOSTS = [
     'fanakaweb.netlify.app',
     '127.0.0.1',
     'localhost',
+    
 ]
 CSRF_TRUSTED_ORIGINS = [
     "https://fanakaapp.onrender.com",
@@ -85,16 +86,16 @@ MIDDLEWARE = [
 
 
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    # "https://yourfrontend.com",
-    "https://fanakaweb.netlify.app"
-]
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
-    # "https://yourfrontend.com",
-    "https://fanakaweb.netlify.app"
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:5173",
+#     # "https://yourfrontend.com",
+#     "https://fanakaweb.netlify.app"
+# ]
+# CSRF_TRUSTED_ORIGINS = [
+#     "http://localhost:5173",
+#     # "https://yourfrontend.com",
+#     "https://fanakaweb.netlify.app"
+# ]
 
 ROOT_URLCONF = 'server.urls'
 
