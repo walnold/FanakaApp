@@ -25,8 +25,20 @@ SECRET_KEY = 'django-insecure-^)l!m^ag&2cmi_gfh8fb(ahx8a9duu_tw%djgjb!@7-05vv9q^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['fanakaapp.onrender.com','fanakaapp.onrender.com', 'fanaka.vercel.app', 'fanaka.vercel.app','127.0.0.1', '127.0.0.1', 'localhost']
-CSRF_TRUSTED_ORIGINS  = ['https://fanakaapp.onrender.com', '0.0.0.0', 'https://fanaka.vercel.app', 'http://127.0.0.1:5174', 'http://localhost:5174']
+ALLOWED_HOSTS = [
+    'fanakaapp.onrender.com',
+    'fanaka.vercel.app',
+    'fanakaweb.netlify.app',
+    '127.0.0.1',
+    'localhost',
+]
+CSRF_TRUSTED_ORIGINS = [
+    "https://fanakaapp.onrender.com",
+    "https://fanaka.vercel.app",
+    "http://127.0.0.1:5174",
+    "http://localhost:5174",
+    "https://fanakaweb.netlify.app",
+]
 CORS_ALLOW_CREDENTIALS = True
 
 # Application definition
@@ -67,19 +79,21 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "django.middleware.csrf.CsrfViewMiddleware",
+    
     
 ]
 
-CORS_ALLOW_CREDENTIALS = True
+
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     # "https://yourfrontend.com",
+    "https://fanakaweb.netlify.app"
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     # "https://yourfrontend.com",
+    "https://fanakaweb.netlify.app"
 ]
 
 ROOT_URLCONF = 'server.urls'
