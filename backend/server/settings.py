@@ -86,11 +86,16 @@ MIDDLEWARE = [
 
 
 
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:5173",
-#     # "https://yourfrontend.com",
-#     "https://fanakaweb.netlify.app"
-# ]
+CORS_ALLOWED_ORIGINS = [
+    "https://fanakaweb.netlify.app",
+    "https://fanaka.vercel.app",
+    "http://127.0.0.1:5174",
+    "http://localhost:5174",
+]
+
+# If you need cookies/JWTs across domains:
+CORS_ALLOW_CREDENTIALS = True
+
 # CSRF_TRUSTED_ORIGINS = [
 #     "http://localhost:5173",
 #     # "https://yourfrontend.com",
