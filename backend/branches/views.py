@@ -1,4 +1,4 @@
-from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView, RetrieveAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -12,10 +12,12 @@ class BranchCreateView(CreateAPIView):
     serializer_class = BranchSerializer
     permission_classes = [IsAuthenticated]
 
-# class BranchListView(ListAPIView):
-#     queryset = Branch.objects.all()
-#     serializer_class = BranchSerializer
-#     permission_classes = [IsAuthenticated]
+from rest_framework.generics import RetrieveAPIView
+
+class BranchDetailView(RetrieveAPIView):
+    queryset = Branch.objects.filter(is_deleted=False)
+    serializer_class = BranchSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class BranchUpdateView(UpdateAPIView):

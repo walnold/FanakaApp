@@ -10,7 +10,8 @@ class ClassStatusSerializer(serializers.ModelSerializer):
 class CourseListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = ["name", "price"]
+        # fields = ["name", "price", "id"]
+        fields = "__all__"
 
 
 class CourseDetailSerializer(serializers.ModelSerializer):

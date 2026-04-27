@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,6 +39,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://fanaka.vercel.app",
     "http://127.0.0.1:5174",
     "http://localhost:5174",
+    "http://localhost:5173",
     "https://fanakaweb.netlify.app",
 ]
 CORS_ALLOW_CREDENTIALS = True
@@ -90,7 +92,9 @@ CORS_ALLOWED_ORIGINS = [
     "https://fanakaweb.netlify.app",
     "https://fanaka.vercel.app",
     "http://127.0.0.1:5174",
+    "http://127.0.0.1:5173",
     "http://localhost:5174",
+    "http://localhost:5173",
 ]
 
 # If you need cookies/JWTs across domains:
@@ -165,6 +169,11 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication', # For Bearer tokens
         'rest_framework.authentication.SessionAuthentication',      # Optional: for browsable API
     ),
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
 # Internationalization

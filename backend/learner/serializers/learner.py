@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from learner.models.learner import Learner
+from learner.models.learner import Learner, LearnerStatus
 
 class LearnerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,3 +10,9 @@ class LearnerSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['created_by'] = self.context['request'].user
         return super().create(validated_data)
+
+
+class LearnerStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LearnerStatus
+        fields = '__all__'

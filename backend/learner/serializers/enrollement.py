@@ -4,8 +4,9 @@ from learner.models.enrollement import Enrollement
 class EnrollmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Enrollement
-        fields = ['id', 'course', 'learner', 'discount', 'lessons', 'status', 'enrolled_on', 'created_by']
+        fields = ['id', 'course', 'learner', 'discount', 'lessons', 'enrolled_on', 'created_by']
         read_only_fields = ['created_by', 'enrolled_on']
+        optional_fileds=["status"]
 
     def create(self, validated_data):
         validated_data['created_by'] = self.context['request'].user

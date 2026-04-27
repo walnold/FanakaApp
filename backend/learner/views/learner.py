@@ -1,13 +1,19 @@
 from rest_framework import viewsets, permissions
-from learner.models.learner import Learner
+from learner.models.learner import Learner, LearnerStatus
 from learner.models.enrollement import Enrollement
 from learner.models.payments import Payments
 from learner.models.lessons import Lesson
 from learner.serializers.enrollement import  EnrollmentSerializer
-from learner.serializers.learner import LearnerSerializer
+from learner.serializers.learner import LearnerSerializer, LearnerStatusSerializer
 from learner.serializers.payment import PaymentSerializer
 from learner.serializers.lessons import LessonSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
+
+
+class LearnerStatusViewSet(viewsets.ModelViewSet):
+    queryset = LearnerStatus.objects.all()
+    serializer_class = LearnerStatusSerializer
+    
 
 
 class LearnerViewSet(viewsets.ModelViewSet):

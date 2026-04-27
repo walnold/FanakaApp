@@ -1,9 +1,10 @@
-from branches.views import BranchCreateView, BranchListView, BranchUpdateView, BranchSoftDeleteView
+from branches.views import BranchCreateView, BranchListView, BranchUpdateView, BranchSoftDeleteView, BranchDetailView
 from django.urls import path
 
 urlpatterns = [
     path('create/', BranchCreateView.as_view(), name='branch-create'),
     path('', BranchListView.as_view(), name='branch-list'),
+    path("branches/<int:pk>/", BranchDetailView.as_view(), name="branch-detail"),
     path('branch/<int:pk>/edit/', BranchUpdateView.as_view(), name='branch-update'),
     path('branch/<int:pk>/delete/', BranchSoftDeleteView.as_view(), name='branch-soft-delete'),
    

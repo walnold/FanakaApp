@@ -8,18 +8,18 @@ class InstructorStatusSerializer(serializers.ModelSerializer):
 
 
 class InstructorListSerializer(serializers.ModelSerializer):
-    status = serializers.SerializerMethodField()
+    # Nest the status serializer so you get full JSON object
+    status = InstructorStatusSerializer(read_only=True)
 
     class Meta:
         model = Instructor
-        fields = ["first_name", "last_name", "phoneNumber"]
-
-    def get_status(self, obj):
-        # Example: if you later link Instructor to InstructorStatus
-        return getattr(obj, "status", None)
+        fields = ["id", "first_name", "last_name", "phoneNumber", "status"]
 
 
 class InstructorDetailSerializer(serializers.ModelSerializer):
+    # Same adjustment here for consistency
+    status = InstructorStatusSerializer(read_only=True)
+
     class Meta:
         model = Instructor
         fields = "__all__"
