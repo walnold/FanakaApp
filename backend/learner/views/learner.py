@@ -8,12 +8,13 @@ from learner.serializers.learner import LearnerSerializer, LearnerStatusSerializ
 from learner.serializers.payment import PaymentSerializer
 from learner.serializers.lessons import LessonSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.decorators import action
 
 
 class LearnerStatusViewSet(viewsets.ModelViewSet):
     queryset = LearnerStatus.objects.all()
     serializer_class = LearnerStatusSerializer
-    
+
 
 
 class LearnerViewSet(viewsets.ModelViewSet):
@@ -27,6 +28,20 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
     serializer_class = EnrollmentSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication] 
+
+    def get_queryset(self):
+        queryset = Enrollement.objects.all()
+        learner_id = self.request.query_params.get("learner")
+        if learner_id:
+            queryset = queryset.filter(learner_id=learner_id)
+        return queryset
+    
+    @action(detail=False, methods=["get"], url_path="by-learner/(?P<learner_id>[^/.]+)")
+    def by_learner(self, request, learner_id=None):
+        enrollments = Enrollement.objects.filter(learner_id=learner_id)
+        serializer = self.get_serializer(enrollments, many=True)
+        return Response(serializer.data)
+
 
 class PaymentViewSet(viewsets.ModelViewSet):
     queryset = Payments.objects.all()
