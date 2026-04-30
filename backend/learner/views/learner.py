@@ -3,12 +3,15 @@ from learner.models.learner import Learner, LearnerStatus
 from learner.models.enrollement import Enrollement
 from learner.models.payments import Payments
 from learner.models.lessons import Lesson
-from learner.serializers.enrollement import  EnrollmentSerializer
+from learner.serializers.enrollement import  EnrollmentCreateSerializer, EnrollmentDetailSerializer, EnrollmentOverviewSerializer
 from learner.serializers.learner import LearnerSerializer, LearnerStatusSerializer
 from learner.serializers.payment import PaymentSerializer
 from learner.serializers.lessons import LessonSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import action
+from django.db.models import Sum, Count, F
+from django.db.models.functions import Coalesce
+from django.db.models import Prefetch
 
 
 class LearnerStatusViewSet(viewsets.ModelViewSet):
@@ -25,16 +28,35 @@ class LearnerViewSet(viewsets.ModelViewSet):
 
 class EnrollmentViewSet(viewsets.ModelViewSet):
     queryset = Enrollement.objects.all()
-    serializer_class = EnrollmentSerializer
+    # serializer_class = EnrollmentSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication] 
 
     def get_queryset(self):
-        queryset = Enrollement.objects.all()
         learner_id = self.request.query_params.get("learner")
+        qs = (
+            Enrollement.objects
+            .select_related("course", "learner")
+            .prefetch_related("payments", "lessons__set()")
+            .annotate(
+                total_payments=Coalesce(Sum("payments__amount"), 0),
+                lessons_taken=Coalesce(Count("lessons"), 0),
+                balance=F("course__price") - F("discount") - Coalesce(Sum("payments__amount"), 0),
+                lessons_remaining=F("lessons") - Coalesce(Count("lessons"), 0),
+            )
+        )
         if learner_id:
-            queryset = queryset.filter(learner_id=learner_id)
-        return queryset
+            qs = qs.filter(learner_id=learner_id)
+        return qs
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return EnrollmentOverviewSerializer
+        elif self.action == "retrieve":
+            return EnrollmentDetailSerializer
+        elif self.action in ["create", "update", "partial_update"]:
+            return EnrollmentCreateSerializer
+        return EnrollmentOverviewSerializer
     
     @action(detail=False, methods=["get"], url_path="by-learner/(?P<learner_id>[^/.]+)")
     def by_learner(self, request, learner_id=None):
