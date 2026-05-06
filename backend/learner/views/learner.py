@@ -12,6 +12,7 @@ from rest_framework.decorators import action
 from django.db.models import Sum, Count, F
 from django.db.models.functions import Coalesce
 from django.db.models import Prefetch
+from rest_framework.response import Response
 
 
 class LearnerStatusViewSet(viewsets.ModelViewSet):
@@ -70,6 +71,12 @@ class PaymentViewSet(viewsets.ModelViewSet):
     serializer_class = PaymentSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication] 
+
+    @action(detail=False, methods=["get"], url_path="by-enrollment/(?P<enrollment_id>[^/.]+)")
+    def by_enrollment(self, request, enrollment_id=None):
+        payments = Payments.objects.filter(enrollement_id=enrollment_id)
+        serializer = self.get_serializer(payments, many=True)
+        return Response(serializer.data)
 
 class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all()
