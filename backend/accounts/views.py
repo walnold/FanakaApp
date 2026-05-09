@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView
 from accounts.models import Staff
 from accounts.serializers import StaffSerializer
 from accounts.customPermissions import IsSuperUserOrManager
@@ -44,6 +44,7 @@ class LoginView(APIView):
                     "username":user.username,
                     "is_Manager":user.is_Manager,
                     "user_id":user.id,
+                    "is_superuser":user.is_superuser,
                 }}, status=HTTP_200_OK
             )
         
@@ -146,5 +147,11 @@ class StaffSoftDeleteView(APIView):
         serializer = StaffSerializer(context={'request': request})
         serializer.soft_delete(staff)
         return Response({"message": "Staff soft-deleted successfully"}, status=HTTP_200_OK)
+    
+
+class StaffUpdateView(UpdateAPIView):
+    queryset = Staff.objects.all()
+    serializer_class = StaffSerializer
+    permission_classes = [IsAuthenticated]
 
         

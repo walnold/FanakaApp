@@ -3,14 +3,17 @@ from django.contrib.auth.hashers import make_password
 from .models import Staff
 
 class StaffSerializer(serializers.ModelSerializer):
+    branch_name = serializers.CharField(source="branch.name", read_only=True)
+
     class Meta:
         model = Staff
         fields = ['id', 'username', 'first_name', 'last_name', 'email',
-                  'isManager', 'phoneNumber', 'idNumber', 'password',
-                  'created_on', 'last_edit_on', 'last_edit_by', 'is_deleted']
+                  'is_Manager', 'phoneNumber', 'idNumber', 'password',
+                  'created_on', 'last_edit_on', 'last_edit_by', 'branch','branch_name', 'is_deleted']
         read_only_fields = ['created_on', 'last_edit_on', 'last_edit_by', 'is_deleted']
         extra_kwargs = {
-            'password': {'write_only': True}
+            'password': {'write_only': True,'required': False},
+
         }
 
     def create(self, validated_data):

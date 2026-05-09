@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 
 class Staff(AbstractUser):
     email = models.EmailField(unique=True, db_index=True)
@@ -14,6 +15,17 @@ class Staff(AbstractUser):
         blank=True,
         on_delete=models.SET_NULL,
         related_name='users'
+    )
+
+    created_by = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='created_staff')
+    created_on = models.DateTimeField(auto_now_add =True)
+    last_edit_on = models.DateTimeField(auto_now=True)
+    last_edit_by = models.ForeignKey(
+        'self',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='edited_staff'
     )
 
     is_deleted = models.BooleanField(default=False)
