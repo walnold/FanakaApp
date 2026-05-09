@@ -13,6 +13,7 @@ from django.db.models import Sum, Count, F
 from django.db.models.functions import Coalesce
 from django.db.models import Prefetch
 from rest_framework.response import Response
+from django.db.models import Q
 
 
 class LearnerStatusViewSet(viewsets.ModelViewSet):
@@ -38,12 +39,12 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
         qs = (
             Enrollement.objects
             .select_related("course", "learner")
-            .prefetch_related("payments", "lessons__set()")
+            .prefetch_related("payments", "lesson_items")
             .annotate(
                 total_payments=Coalesce(Sum("payments__amount"), 0),
-                lessons_taken=Coalesce(Count("lessons"), 0),
+                lessons_taken=Coalesce(Count("lesson_items"), 0),
                 balance=F("course__price") - F("discount") - Coalesce(Sum("payments__amount"), 0),
-                lessons_remaining=F("lessons") - Coalesce(Count("lessons"), 0),
+                lessons_remaining=F("num_of_lessons") - Coalesce(Count("lesson_items"), 0),
             )
         )
         if learner_id:
@@ -79,7 +80,35 @@ class PaymentViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 class LessonViewSet(viewsets.ModelViewSet):
-    queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [JWTAuthentication] 
+    authentication_classes = [JWTAuthentication]
+
+    def get_queryset(self):
+        qs = (
+            Lesson.objects
+            .select_related("enrollment", "instructor", "vehicle")
+            .all()
+        )
+
+        enrollment_id = self.request.query_params.get("enrollment")
+        learner_id = self.request.query_params.get("learner")
+        location = self.request.query_params.get("location")
+
+        # 🔹 filter by enrollment
+        if enrollment_id:
+            qs = qs.filter(enrollment_id=enrollment_id)
+
+        # 🔹 filter by learner (through enrollment)
+        if learner_id:
+            qs = qs.filter(enrollment__learner_id=learner_id)
+
+        # 🔹 filter by location (only if your model has it or related model does)
+        if location:
+            qs = qs.filter(
+                Q(vehicle__number_plate__icontains=location) |
+                Q(instructor__first_name__icontains=location) |
+                Q(instructor__last_name__icontains=location)
+            )
+
+        return qs

@@ -5,7 +5,7 @@ from learner.models.payments import Payments
 from rest_framework import serializers
 from learner.models.enrollement import Enrollement
 
-
+from learner.models.lessons import Lesson
 
 
 
@@ -76,7 +76,7 @@ class EnrollmentOverviewSerializer(serializers.ModelSerializer):
         model = Enrollement
         fields = [
             "id", "course", "course_name", "learner",
-            "discount", "lessons", "enrolled_on", "created_by",
+            "discount", "num_of_lessons", "enrolled_on", "created_by",
             "enrollment_status", "total_payments", "balance",
             "lessons_taken", "lessons_remaining"
         ]
@@ -95,16 +95,16 @@ class EnrollmentDetailSerializer(serializers.ModelSerializer):
     lessons_remaining = serializers.IntegerField(read_only=True)
 
     payments = serializers.SerializerMethodField()
-    lessons = serializers.SerializerMethodField()
+    lesson_items = serializers.SerializerMethodField()
 
     class Meta:
         model = Enrollement
         fields = [
             "id", "course", "course_name", "learner",
-            "discount", "lessons", "enrolled_on", "created_by",
+            "discount", "lesson_items", "enrolled_on", "created_by",
             "enrollment_status", "total_payments", "balance",
             "lessons_taken", "lessons_remaining",
-            "payments", "lessons"
+            "payments", "num_of_lessons"
         ]
         read_only_fields = ["created_by", "enrolled_on"]
 
@@ -112,7 +112,7 @@ class EnrollmentDetailSerializer(serializers.ModelSerializer):
         return [{"id": p.id, "amount": p.amount, "paid_on": p.paid_on} for p in obj.payment_set.all()]
 
     def get_lessons(self, obj):
-        return [{"id": l.id, "topic": l.topic, "date": l.date} for l in obj.lesson_set.all()]
+        return [{"id": l.id, "topic": l.topic, "date": l.date} for l in obj.lesson_items.all()]
 
 
 
@@ -125,7 +125,7 @@ class EnrollmentCreateSerializer(serializers.ModelSerializer):
             "course",
             "learner",
             "discount",
-            "lessons",
+            "num_of_lessons",
         ]
 
     def create(self, validated_data):

@@ -18,7 +18,7 @@ class Enrollement(models.Model):
     course  = models.ForeignKey(Course, related_name='enrollements', on_delete=models.SET_NULL, blank=True, null=True)
     learner = models.ForeignKey(Learner, related_name='enrollements', on_delete=models.SET_NULL, blank=True, null=True)
     discount = models.IntegerField()
-    lessons = models.IntegerField()
+    num_of_lessons = models.IntegerField()
     status = models.ForeignKey(EnrollementStatus, related_name='enrollements', on_delete=models.SET_NULL, null=True, blank=True)
     enrolled_on = models.DateField(auto_now_add=True)
     created_by = models.ForeignKey(Staff, on_delete=models.SET_NULL, blank=True, null=True, related_name='created_enrollements')

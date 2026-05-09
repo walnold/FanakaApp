@@ -20,12 +20,23 @@ class VehicleSerializer(serializers.ModelSerializer):
 
 # Custom serializers for different contexts
 class VehicleListSerializer(serializers.ModelSerializer):
-    status = serializers.CharField(source="status.status")
-    transmission = serializers.CharField(source="transmission.type")
+
+    status = serializers.SerializerMethodField()
+    transmission = serializers.SerializerMethodField()
 
     class Meta:
         model = Vehicle
-        fields = ["number_plate", "status", "transmission"]
+        fields = ["id", "number_plate", "status", "transmission"]
+
+    def get_status(self, obj):
+        if obj.status:
+            return obj.status.status
+        return None
+
+    def get_transmission(self, obj):
+        if obj.transmission:
+            return obj.transmission.type
+        return None
 
 class VehicleDetailSerializer(serializers.ModelSerializer):
     status = serializers.StringRelatedField()
