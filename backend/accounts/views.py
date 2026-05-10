@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.generics import CreateAPIView, UpdateAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView, RetrieveAPIView
 from accounts.models import Staff
 from accounts.serializers import StaffSerializer
 from accounts.customPermissions import IsSuperUserOrManager
@@ -45,6 +45,7 @@ class LoginView(APIView):
                     "is_Manager":user.is_Manager,
                     "user_id":user.id,
                     "is_superuser":user.is_superuser,
+                    "branch":user.branch.id
                 }}, status=HTTP_200_OK
             )
         
@@ -154,4 +155,9 @@ class StaffUpdateView(UpdateAPIView):
     serializer_class = StaffSerializer
     permission_classes = [IsAuthenticated]
 
+
+class StaffDetailView(RetrieveAPIView):
+    queryset = Staff.objects.filter(is_deleted=False)
+    serializer_class = StaffSerializer
+    permission_classes = [IsAuthenticated]
         

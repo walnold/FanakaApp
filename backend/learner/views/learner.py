@@ -28,6 +28,19 @@ class LearnerViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication] 
 
+    def get_queryset(self):
+        qs = Learner.objects.all()
+
+        # If user is not a manager or superuser, restrict to their branch
+        user = self.request.user
+        if not getattr(user, "is_Manager", False) and not user.is_superuser:
+            if user.branch_id:
+                qs = qs.filter(branch_id=user.branch_id)
+            else:
+                qs = qs.none()  # no branch assigned → no learners visible
+
+        return qs
+
 class EnrollmentViewSet(viewsets.ModelViewSet):
     queryset = Enrollement.objects.all()
     # serializer_class = EnrollmentSerializer

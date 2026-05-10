@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
-from accounts.views import LoginView, LogoutView, RequestPasswordReset, ConfirmPasswordReset, StaffCreateView, StaffListView,StaffUpdateView
+from accounts.views import LoginView, LogoutView, RequestPasswordReset, ConfirmPasswordReset, StaffCreateView, StaffListView,StaffUpdateView, StaffDetailView
 
 
 
@@ -13,6 +13,7 @@ urlpatterns = [
         path('staffs/create/', StaffCreateView.as_view(), name='staff-create'),
         path('staffs/<int:pk>/', StaffUpdateView.as_view(), name='staff-update'),
         path('staffs/', StaffListView.as_view(), name='staff-list'),
+        path('staffs/profile/<int:pk>/', StaffDetailView.as_view(), name='staff-detail'),
 
     
 ]
