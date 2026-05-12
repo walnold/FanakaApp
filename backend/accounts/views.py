@@ -5,7 +5,7 @@ from rest_framework.status import HTTP_200_OK, HTTP_401_UNAUTHORIZED, HTTP_201_C
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, SlidingToken
 from rest_framework.generics import CreateAPIView, UpdateAPIView, RetrieveAPIView
 from accounts.models import Staff
 from accounts.serializers import StaffSerializer
@@ -26,33 +26,32 @@ from django.conf import settings
 
 # Login Endpoint
 class LoginView(APIView):
+
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
-        
 
         user = authenticate(username=username, password=password)
-       
 
         if user is not None:
-            refresh = RefreshToken.for_user(user)
+
+            token = SlidingToken.for_user(user)
 
             return Response({
-                "access":str(refresh.access_token),
-                "refresh":str(refresh),
-                "user":{
-                    "username":user.username,
-                    "is_Manager":user.is_Manager,
-                    "user_id":user.id,
-                    "is_superuser":user.is_superuser,
-                    "branch":user.branch.id
-                }}, status=HTTP_200_OK
-            )
-        
-                
-        return Response({"error":"Invalid Credentials"}, status=HTTP_401_UNAUTHORIZED)
-    
+                "token": str(token),
+                "user": {
+                    "username": user.username,
+                    "is_Manager": user.is_Manager,
+                    "user_id": user.id,
+                    "is_superuser": user.is_superuser,
+                    "branch": user.branch.id if user.branch else None
+                }
+            }, status=HTTP_200_OK)
 
+        return Response(
+            {"error": "Invalid Credentials"},
+            status=HTTP_401_UNAUTHORIZED
+        )
 
 #Logout Endpoint
 class LogoutView(APIView):
