@@ -18,6 +18,7 @@ class Learner(models.Model):
     status = models.ForeignKey(LearnerStatus, related_name='learners', on_delete=models.SET_NULL,null=True, blank=True)
     branch = models.ForeignKey(Branch, related_name="learners", on_delete=models.SET_NULL, null=True, blank=True)
     created_by = models.ForeignKey(Staff, on_delete=models.SET_NULL, blank=True, null=True, related_name='created_learners')
+    phoneNumber = models.CharField(blank=True, null=True, default="070000000", max_length=12)
 
 
 

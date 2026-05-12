@@ -21,7 +21,7 @@ class LearnerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Learner
-        fields = ['id', 'first_name', 'last_name', 'idNumber', 'status', 'branch', 'created_by', 'status_name' ,'branch_name', 'created_by_name']
+        fields = ['id', 'first_name', 'last_name', 'idNumber', 'status','phoneNumber', 'branch', 'created_by', 'status_name' ,'branch_name', 'created_by_name']
         read_only_fields = ['created_by']
 
     def create(self, validated_data):
