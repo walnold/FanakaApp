@@ -1,4 +1,5 @@
 from django.contrib import admin
+from learner.models.Exam import Exam, ExamStatus
 from learner.models.learner import Learner, LearnerStatus
 from learner.models.enrollement import Enrollement, EnrollementStatus
 from learner.models.lessons import Lesson
@@ -11,3 +12,5 @@ admin.site.register(Enrollement)
 admin.site.register(EnrollementStatus)
 admin.site.register(Lesson)
 admin.site.register(Payments)
+admin.site.register(Exam)
+admin.site.register(ExamStatus)

@@ -87,6 +87,7 @@ class EnrollmentOverviewSerializer(serializers.ModelSerializer):
 
 class EnrollmentDetailSerializer(serializers.ModelSerializer):
     course_name = serializers.CharField(source="course.name", read_only=True)
+    exams = serializers.SerializerMethodField()
     enrollment_status = serializers.CharField(source="EnrollementStatus.status", read_only=True)
 
     total_payments = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
@@ -104,7 +105,7 @@ class EnrollmentDetailSerializer(serializers.ModelSerializer):
             "discount", "lesson_items", "enrolled_on", "created_by",
             "enrollment_status", "total_payments", "balance",
             "lessons_taken", "lessons_remaining",
-            "payments", "num_of_lessons"
+            "payments", "num_of_lessons", "exams"
         ]
         read_only_fields = ["created_by", "enrolled_on"]
 
@@ -113,6 +114,16 @@ class EnrollmentDetailSerializer(serializers.ModelSerializer):
 
     def get_lessons(self, obj):
         return [{"id": l.id, "topic": l.topic, "date": l.date} for l in obj.lesson_items.all()]
+    
+    def get_exams(self, obj):
+        return [
+            {
+                "id": exam.id,
+                "exam_date": exam.exam_date,
+                "status": exam.exam_status.status if exam.exam_status else None
+            }
+            for exam in obj.exams.all()
+        ]
 
 
 
