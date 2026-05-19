@@ -66,6 +66,7 @@ from learner.models.lessons import Lesson
 class EnrollmentOverviewSerializer(serializers.ModelSerializer):
     course_name = serializers.CharField(source="course.name", read_only=True)
     enrollment_status = serializers.CharField(source="EnrollementStatus.status", read_only=True)
+    exams = serializers.SerializerMethodField()
 
     total_payments = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     balance = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
@@ -78,9 +79,20 @@ class EnrollmentOverviewSerializer(serializers.ModelSerializer):
             "id", "course", "course_name", "learner",
             "discount", "num_of_lessons", "enrolled_on", "created_by",
             "enrollment_status", "total_payments", "balance",
-            "lessons_taken", "lessons_remaining"
+            "lessons_taken", "lessons_remaining","exams"
         ]
         read_only_fields = ["created_by", "enrolled_on"]
+
+    def get_exams(self, obj):
+        return [
+            {
+                "id": exam.id,
+                "exam_date": exam.exam_date,
+                "status": exam.exam_status.status if exam.exam_status else None,
+                "status_id": exam.exam_status.id if exam.exam_status else None
+            }
+            for exam in obj.exams.all()
+        ]
 
 
 
@@ -120,7 +132,8 @@ class EnrollmentDetailSerializer(serializers.ModelSerializer):
             {
                 "id": exam.id,
                 "exam_date": exam.exam_date,
-                "status": exam.exam_status.status if exam.exam_status else None
+                "status": exam.exam_status.status if exam.exam_status else None,
+                "status_id": exam.exam_status.id if exam.exam_status else None
             }
             for exam in obj.exams.all()
         ]

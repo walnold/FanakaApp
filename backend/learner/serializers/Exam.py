@@ -42,13 +42,14 @@ from learner.serializers.enrollement import EnrollmentDetailSerializer
 class ExamDetailSerializer(serializers.ModelSerializer):
     enrollment = EnrollmentDetailSerializer(read_only=True)
     exam_status = serializers.CharField(source="exam_status.status", read_only=True)
+    exam_status_id = serializers.CharField(source="exam_status.id", read_only=True)
 
     class Meta:
         model = Exam
         fields = [
             'id', 'exam_date', 'exam_status',
             'enrollment', 'created_by',
-            'created_on', 'edited_on'
+            'created_on', 'edited_on','exam_status_id'
         ]
 
 
