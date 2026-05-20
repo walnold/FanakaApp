@@ -122,9 +122,9 @@ class EnrollmentDetailSerializer(serializers.ModelSerializer):
         read_only_fields = ["created_by", "enrolled_on"]
 
     def get_payments(self, obj):
-        return [{"id": p.id, "amount": p.amount, "paid_on": p.paid_on} for p in obj.payment_set.all()]
+        return [{"id": p.id, "amount": p.amount, "paid_on": p.payed_on} for p in obj.payments.all()]
 
-    def get_lessons(self, obj):
+    def get_lesson_items(self, obj):
         return [{"id": l.id, "topic": l.topic, "date": l.date} for l in obj.lesson_items.all()]
     
     def get_exams(self, obj):

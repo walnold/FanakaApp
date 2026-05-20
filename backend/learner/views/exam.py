@@ -22,6 +22,8 @@ class ExamViewSet(viewsets.ModelViewSet):
             return ExamListSerializer
         elif self.action == 'retrieve':
             return ExamDetailSerializer
+        elif self.action in ['update','partial_update']:
+            return ExamCreateSerializer
         return ExamDetailSerializer
 
     def get_queryset(self):
