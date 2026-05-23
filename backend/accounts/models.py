@@ -29,6 +29,7 @@ class Staff(AbstractUser):
     )
 
     is_deleted = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
 
     # objects = models.Manager()
 

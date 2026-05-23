@@ -38,3 +38,24 @@ class StaffSerializer(serializers.ModelSerializer):
         instance.is_deleted = True
         instance.save()
         return instance
+    
+
+
+# # accounts/serializers.py
+# from rest_framework import serializers
+# from .models import Staff
+
+class StaffActivationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Staff
+        fields = ["id", "is_active"]
+
+    def update(self, instance, validated_data):
+        # Only superadmins should be able to activate
+        request = self.context.get("request")
+        if not request.user.is_superuser:
+            raise serializers.ValidationError("Only superadmins can activate staff.")
+        instance.is_active = validated_data.get("is_active", instance.is_active)
+        instance.save()
+        return instance
+

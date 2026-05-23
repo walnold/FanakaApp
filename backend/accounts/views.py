@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken, SlidingToken
 from rest_framework.generics import CreateAPIView, UpdateAPIView, RetrieveAPIView
 from accounts.models import Staff
-from accounts.serializers import StaffSerializer
+from accounts.serializers import StaffActivationSerializer, StaffSerializer
 from accounts.customPermissions import IsSuperUserOrManager
 from rest_framework.generics import ListAPIView
 
@@ -159,4 +159,16 @@ class StaffDetailView(RetrieveAPIView):
     queryset = Staff.objects.filter(is_deleted=False)
     serializer_class = StaffSerializer
     permission_classes = [IsAuthenticated]
-        
+
+
+
+class StaffActivationView(UpdateAPIView):
+    queryset = Staff.objects.all()
+    serializer_class = StaffActivationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Only superadmins can activate staff
+        if self.request.user.is_superuser:
+            return Staff.objects.all()
+        return Staff.objects.none()
