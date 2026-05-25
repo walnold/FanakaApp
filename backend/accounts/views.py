@@ -1,22 +1,29 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_401_UNAUTHORIZED, HTTP_201_CREATED, HTTP_404_NOT_FOUND
+from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED, HTTP_201_CREATED, HTTP_404_NOT_FOUND
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken, SlidingToken
-from rest_framework.generics import CreateAPIView, UpdateAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, GenericAPIView, UpdateAPIView, RetrieveAPIView
 from accounts.models import Staff
-from accounts.serializers import StaffActivationSerializer, StaffSerializer
+from accounts.serializers import PasswordChangeSerializer, PasswordResetConfirmSerializer, PasswordResetSerializer, StaffActivationSerializer, StaffSerializer
 from accounts.customPermissions import IsSuperUserOrManager
 from rest_framework.generics import ListAPIView
+from rest_framework.authtoken.models import Token
+from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode 
+from django.utils.encoding import force_bytes, force_str
+# from rest_framework.authtoken.models import Token
+
 
 
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.urls import reverse
 from django.conf import settings
+
+from accounts.utils import logout_user_sessions
 
 
 
@@ -82,39 +89,65 @@ class RequestPasswordReset(APIView):
 
 
         if user:
-            token = default_token_generator.make_token(user)
-            uid = user.pk
+            # token = default_token_generator.make_token(user)
+            # uid = user.pk
 
-            reset_link = f"http://[f.endlink]/reset-password/{uid}/{token}/"
+            # reset_link = f"http://{settings.FRONTEND_LINK}/reset-password/{uid}/{token}/"
+            uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+
+            reset_link = f"http://{settings.FRONTEND_LINK}/reset-password/{uidb64}/{token}/"
 
             send_mail(
                 "password Reset",
                 f"Click link: {reset_link}",
-                settings.Email_Host_user,
+                settings.EMAIL_HOST_USER,
                 [email],
             )
 
         return Response({"message":"If email exists, reset Link sent"})
     
 #confirm password reset
-class ConfirmPasswordReset(APIView):
-    def post(self, request, uid, token):
-        from accounts.models import Staff
+# class ConfirmPasswordReset(APIView):
+#     def post(self, request, uid, token):
+#         from accounts.models import Staff
 
-        password = request.data.get("password")
+#         password = request.data.get("password")
+
+#         try:
+#             user = Staff.objects.get(pk=uid)
+#         except Staff.DoesNotExist:
+#             return Response({"error":"Invalid User"}, status=400)
+        
+
+#         if default_token_generator.check_token(user, token):
+#             user.set_password(password)
+#             user.save()
+#             return Response({"message":"Password reset successful"})
+        
+#         return Response({"error":"Invalid or expired token"}, status=400)
+
+
+class ConfirmPasswordReset(APIView):
+    def post(self, request, uidb64, token):
+        password = request.data.get("new_password")
 
         try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
             user = Staff.objects.get(pk=uid)
-        except Staff.DoesNotExist:
-            return Response({"error":"Invalid User"}, status=400)
-        
+        except (TypeError, ValueError, OverflowError, Staff.DoesNotExist):
+            return Response({"error": "Invalid user"}, status=400)
 
         if default_token_generator.check_token(user, token):
             user.set_password(password)
             user.save()
-            return Response({"message":"Password reset successful"})
+
+            # ✅ For JWT: just let old tokens expire naturally.
+            # Optionally, you can force logout by rotating signing key or using blacklist.
+
+            return Response({"message": "Password reset successful"})
         
-        return Response({"error":"Invalid or expired token"}, status=400)
+        return Response({"error": "Invalid or expired token"}, status=400)
     
 
 class StaffCreateView(CreateAPIView):
@@ -129,6 +162,9 @@ class StaffCreateView(CreateAPIView):
 class StaffListView(ListAPIView):
     serializer_class = StaffSerializer
     permission_classes = [IsAuthenticated]
+
+
+    
 
     def get_queryset(self):
         # Only return staff who are not deleted
@@ -172,3 +208,61 @@ class StaffActivationView(UpdateAPIView):
         if self.request.user.is_superuser:
             return Staff.objects.all()
         return Staff.objects.none()
+
+
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        old_password = request.data.get("old_password")
+        new_password = request.data.get("new_password")
+
+        if not user.check_password(old_password):
+            return Response({"error": "Old password is incorrect"}, status=HTTP_400_BAD_REQUEST)
+
+        user.set_password(new_password)
+        user.save()
+        return Response({"message": "Password changed successfully"})
+    
+
+class PasswordResetView(GenericAPIView):
+    serializer_class = PasswordResetSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"message": "Reset link sent if email exists"})
+
+
+class PasswordResetConfirmView(GenericAPIView):
+    serializer_class = PasswordResetConfirmSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        # ✅ For JWT: no Token.objects deletion
+        # Clear Django sessions if you’re using session auth
+        logout(request)
+
+        # On the frontend, clear JWTs from localStorage/session
+        return Response({"message": "Password reset successful. Please log in again."})
+
+
+class PasswordChangeView(GenericAPIView):
+    serializer_class = PasswordChangeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        Token.objects.filter(user=user).delete()
+        logout_user_sessions(user)  # force logout
+        return Response({"message": "Password changed successfully. Please log in again."})
