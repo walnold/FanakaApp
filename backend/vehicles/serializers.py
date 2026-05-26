@@ -21,12 +21,15 @@ class VehicleSerializer(serializers.ModelSerializer):
 # Custom serializers for different contexts
 class VehicleListSerializer(serializers.ModelSerializer):
 
-    status = serializers.SerializerMethodField()
-    transmission = serializers.SerializerMethodField()
+    status = serializers.PrimaryKeyRelatedField(read_only=True)
+    transmission = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    status_display = serializers.CharField(source="status.status", read_only=True)
+    transmission_display = serializers.CharField(source="transmission.type", read_only=True)
 
     class Meta:
         model = Vehicle
-        fields = ["id", "number_plate", "status", "transmission"]
+        fields = ["id", "number_plate", "status", "status_display", "transmission", "transmission_display", "yom"]
 
     def get_status(self, obj):
         if obj.status:
@@ -39,8 +42,11 @@ class VehicleListSerializer(serializers.ModelSerializer):
         return None
 
 class VehicleDetailSerializer(serializers.ModelSerializer):
-    status = serializers.StringRelatedField()
-    transmission = serializers.StringRelatedField()
+    status = serializers.PrimaryKeyRelatedField(queryset=VehicleStatus.objects.all())
+    transmission = serializers.PrimaryKeyRelatedField(queryset=TransmissionType.objects.all())
+
+    status_display = serializers.CharField(source="status.status", read_only=True)
+    transmission_display = serializers.CharField(source="transmission.type", read_only=True)
 
     class Meta:
         model = Vehicle
