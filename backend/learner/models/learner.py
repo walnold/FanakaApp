@@ -1,6 +1,7 @@
 from django.db import models
 from accounts.models import Staff
 from branches.models import Branch
+from django.utils.timezone import now
 
 class LearnerStatus(models.Model):
     status = models.CharField(blank=False, null=False, max_length=10, unique=True, db_index=True)
@@ -19,6 +20,8 @@ class Learner(models.Model):
     branch = models.ForeignKey(Branch, related_name="learners", on_delete=models.SET_NULL, null=True, blank=True)
     created_by = models.ForeignKey(Staff, on_delete=models.SET_NULL, blank=True, null=True, related_name='created_learners')
     phoneNumber = models.CharField(blank=True, null=True, default="070000000", max_length=12)
+    created_on = models.DateField(auto_now_add=True)
+    edited_on = models.DateField(auto_now=True)
 
 
 

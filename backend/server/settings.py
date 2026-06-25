@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 from datetime import timedelta
 from decouple import config, Csv
@@ -68,6 +69,7 @@ INSTALLED_APPS = [
     'instructors',
     'classes',
     'learner',
+    'analytics'
 ]
 
 SPECTACULAR_SETTINGS = {
@@ -209,3 +211,5 @@ EMAIL_HOST_USER = config("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 FRONTEND_LINK=config("FRONTEND_LINK")
 
+STATIC_ROOT=os.path.join(BASE_DIR,'staticfiles')
+MEDIA_ROOT=os.path.join(BASE_DIR,'media')
